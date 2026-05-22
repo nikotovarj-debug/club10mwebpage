@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Club 10M × XM — Únete al movimiento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@300;400;500&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#04040a;--card:#0c0a14;--card2:#080810;
+  --text:#e8e8f2;--muted:#54546a;
+  --g0:#FFF6C7;--g1:#F7D97A;--g2:#D9A441;--g3:#A87028;
+  --gold:#C9A84C;--teal:#00e5cc;--green:#22c55e;
+  --border:rgba(255,255,255,0.055);--bgold:rgba(201,168,76,0.16);
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;display:flex;flex-direction:column;align-items:center;padding:12px;overflow-x:hidden;min-height:100vh}
+h1,h2,.cin{font-family:'Anton',sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;line-height:.92;background:linear-gradient(to bottom,var(--g0) 0%,var(--g1) 44%,var(--g2) 78%,var(--g3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 18px rgba(247,217,122,.32)) drop-shadow(0 6px 16px rgba(0,0,0,.7))}
+h2.white{background:linear-gradient(to bottom,#fff 0%,rgba(255,255,255,.68) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:none}
+@keyframes fadeUp{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:translateY(0)}}
+@keyframes revealText{from{clip-path:inset(0 100% 0 0);opacity:0}to{clip-path:inset(0 0% 0 0);opacity:1}}
+@keyframes glowPulse{0%,100%{filter:drop-shadow(0 0 18px rgba(247,217,122,.32)) drop-shadow(0 6px 16px rgba(0,0,0,.7))}50%{filter:drop-shadow(0 0 38px rgba(247,217,122,.58)) drop-shadow(0 6px 16px rgba(0,0,0,.7))}}
+@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+@keyframes scanline{0%{top:-2px;opacity:0}4%{opacity:1}96%{opacity:.4}100%{top:100%;opacity:0}}
+@keyframes bpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.2;transform:scale(.5)}}
+@keyframes borderGlow{0%,100%{border-color:rgba(201,168,76,.1)}50%{border-color:rgba(201,168,76,.35)}}
+@keyframes particleDrift{0%{transform:translateY(0) translateX(0);opacity:0}10%{opacity:.8}90%{opacity:.3}100%{transform:translateY(-110px) translateX(var(--dx));opacity:0}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes checkBounce{0%{transform:scale(0)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+.hero-active h1{animation:fadeUp .8s cubic-bezier(.16,1,.3,1) forwards,glowPulse 3s 1.5s infinite}
+.hero-active .hero-sub{animation:revealText .9s .35s cubic-bezier(.16,1,.3,1) forwards;opacity:0}
+.hero-active .hero-desc{animation:fadeUp .7s .55s cubic-bezier(.16,1,.3,1) both}
+.hero-active .cta-row{animation:fadeUp .7s .75s cubic-bezier(.16,1,.3,1) both}
+.hero-active .hero-badge{animation:fadeUp .6s .1s cubic-bezier(.16,1,.3,1) both}
+.hero-active .chart-wrap{animation:fadeUp .8s .9s cubic-bezier(.16,1,.3,1) both}
+.hero-active .stats{animation:fadeUp .7s 1.1s cubic-bezier(.16,1,.3,1) both}
+.sr{opacity:0;transform:translateY(28px);transition:opacity .65s cubic-bezier(.16,1,.3,1),transform .65s cubic-bezier(.16,1,.3,1)}
+.sr.vis{opacity:1;transform:none}
+.sr-l{opacity:0;transform:translateX(-28px);transition:opacity .65s .1s cubic-bezier(.16,1,.3,1),transform .65s .1s cubic-bezier(.16,1,.3,1)}
+.sr-l.vis{opacity:1;transform:none}
+.sr-r{opacity:0;transform:translateX(28px);transition:opacity .65s .1s cubic-bezier(.16,1,.3,1),transform .65s .1s cubic-bezier(.16,1,.3,1)}
+.sr-r.vis{opacity:1;transform:none}
+.sr-d1{transition-delay:.12s}.sr-d2{transition-delay:.24s}.sr-d3{transition-delay:.36s}.sr-d4{transition-delay:.48s}
+
+/* NAV */
+nav{width:100%;max-width:1200px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:13px 28px;margin-bottom:12px;background:rgba(4,4,10,.92);border:1px solid var(--border);border-radius:14px;backdrop-filter:blur(24px);position:sticky;top:12px;z-index:100;animation:fadeUp .6s ease both}
+.nav-logo{font-family:'Anton',sans-serif;font-size:1.25rem;letter-spacing:2px;background:linear-gradient(to bottom,var(--g0),var(--g2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 8px rgba(247,217,122,.3))}
+.nav-links{display:flex;list-style:none;gap:28px}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.8rem;letter-spacing:.05em;transition:color .2s;position:relative;padding-bottom:2px}
+.nav-links a::after{content:'';position:absolute;bottom:0;left:0;height:1px;width:0;background:var(--g1);transition:width .3s}
+.nav-links a:hover{color:var(--text)}.nav-links a:hover::after{width:100%}
+.nav-actions{display:flex;justify-content:flex-end;gap:10px}
+.btn-ghost{background:rgba(255,255,255,.05);border:1px solid var(--border);color:rgba(255,255,255,.55);padding:7px 18px;border-radius:999px;font-size:.8rem;font-weight:500;cursor:pointer;text-decoration:none;transition:background .2s}
+.btn-ghost:hover{background:rgba(255,255,255,.1);color:white}
+.btn-nav-gold{background:linear-gradient(135deg,var(--g1),var(--g2));color:#0a0800;padding:8px 20px;border-radius:999px;font-family:'Syne',sans-serif;font-size:.8rem;font-weight:800;cursor:pointer;text-decoration:none;transition:transform .15s,box-shadow .15s}
+.btn-nav-gold:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(201,168,76,.3)}
+.menu-toggle{display:none;flex-direction:column;justify-content:space-between;width:24px;height:14px;background:none;border:none;cursor:pointer;z-index:1001;padding:0}
+.menu-toggle span{display:block;width:100%;height:2px;background:white;transition:transform .35s cubic-bezier(.4,0,.2,1);transform-origin:center}
+.menu-toggle.active span:first-child{transform:translateY(6px) rotate(45deg)}
+.menu-toggle.active span:last-child{transform:translateY(-6px) rotate(-45deg)}
+
+/* HERO */
+.hero{width:100%;max-width:1200px;border-radius:22px;border:1px solid rgba(201,168,76,.1);overflow:hidden;position:relative;background:var(--card);padding:80px 48px 64px;min-height:700px;display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:12px;animation:borderGlow 4s 1.5s infinite}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 55% at 50% -8%,rgba(201,168,76,.1) 0%,transparent 65%),radial-gradient(ellipse 40% 35% at 10% 95%,rgba(0,229,204,.04) 0%,transparent 55%),radial-gradient(ellipse 40% 35% at 90% 95%,rgba(201,168,76,.04) 0%,transparent 55%);z-index:0;pointer-events:none}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(201,168,76,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,.035) 1px,transparent 1px);background-size:54px 54px;mask-image:radial-gradient(ellipse 95% 75% at 50% 0%,black,transparent 78%);-webkit-mask-image:radial-gradient(ellipse 95% 75% at 50% 0%,black,transparent 78%);z-index:0;pointer-events:none}
+.scanline{position:absolute;left:0;right:0;height:1px;z-index:1;pointer-events:none;top:0;background:linear-gradient(90deg,transparent 0%,rgba(201,168,76,.5) 30%,rgba(255,255,255,.6) 50%,rgba(201,168,76,.5) 70%,transparent 100%);animation:scanline 6s linear infinite}
+.particles{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.particle{position:absolute;width:2px;height:2px;border-radius:50%;background:var(--g1);animation:particleDrift var(--dur) var(--delay) infinite ease-in}
+.hero-inner{position:relative;z-index:2;max-width:720px;margin-bottom:44px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.22);border-radius:100px;padding:5px 16px;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--g1);margin-bottom:32px;opacity:0}
+.bpulse{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:bpulse 2s infinite}
+.hero h1{font-size:clamp(3.8rem,10vw,7.5rem);opacity:0}
+.hero-sub{font-family:'Anton',sans-serif;font-size:clamp(1.6rem,4vw,3rem);text-transform:uppercase;letter-spacing:2px;line-height:.93;background:linear-gradient(135deg,rgba(255,246,199,.5) 0%,rgba(0,229,204,.4) 50%,rgba(255,246,199,.35) 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 4s linear infinite;margin-bottom:24px;opacity:0;clip-path:inset(0 100% 0 0)}
+.hero-desc{font-size:1rem;color:rgba(232,232,240,.42);line-height:1.78;max-width:520px;margin:0 auto 40px;font-weight:300;opacity:0}
+.hero-desc strong{color:var(--g1);font-weight:500}
+.cta-row{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;opacity:0}
+.btn-hero{display:inline-flex;align-items:center;gap:12px;background:linear-gradient(135deg,var(--g1) 0%,var(--g2) 100%);color:#0a0800;padding:17px 46px;border-radius:999px;font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;text-decoration:none;letter-spacing:.02em;transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden;box-shadow:0 0 40px rgba(201,168,76,.22),inset 0 1px 0 rgba(255,255,255,.18)}
+.btn-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.16) 0%,transparent 55%);pointer-events:none}
+.btn-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.18) 50%,transparent 100%);transform:translateX(-100%);transition:transform .5s;pointer-events:none}
+.btn-hero:hover::after{transform:translateX(100%)}
+.btn-hero:hover{transform:translateY(-3px);box-shadow:0 12px 50px rgba(201,168,76,.45)}
+.btn-hero .arr{transition:transform .2s}.btn-hero:hover .arr{transform:translateX(5px)}
+.btn-outline{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);padding:16px 28px;border-radius:999px;font-size:.9rem;text-decoration:none;transition:border-color .25s,color .25s,background .25s}
+.btn-outline:hover{border-color:rgba(201,168,76,.45);color:var(--g1);background:rgba(201,168,76,.06)}
+.chart-wrap{position:relative;z-index:2;width:100%;max-width:900px;height:190px;border:1px solid rgba(201,168,76,.1);border-radius:16px;background:rgba(0,0,0,.3);overflow:hidden;margin-bottom:44px;opacity:0}
+.chart-lbl{position:absolute;top:12px;left:15px;z-index:3;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--g1);opacity:.6;display:flex;align-items:center;gap:6px}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:bpulse 1.2s infinite}
+.chart-price-display{position:absolute;top:10px;right:15px;z-index:3;display:flex;align-items:baseline;gap:5px}
+.chart-price{font-family:'Anton',sans-serif;font-size:1.15rem;letter-spacing:1px;background:linear-gradient(to bottom,var(--g0),var(--g1));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.chart-change{font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;color:#22c55e;background:rgba(34,197,94,.1);padding:2px 6px;border-radius:4px}
+canvas#chart{display:block;width:100%;height:100%}
+.stats{position:relative;z-index:2;display:flex;gap:0;border:1px solid rgba(201,168,76,.1);border-radius:14px;overflow:hidden;background:rgba(0,0,0,.2);width:100%;max-width:560px;opacity:0}
+.stat{flex:1;padding:16px 18px;text-align:center;border-right:1px solid rgba(201,168,76,.06)}
+.stat:last-child{border-right:none}
+.s-num{font-family:'Anton',sans-serif;font-size:1.8rem;letter-spacing:1px;line-height:1;background:linear-gradient(to bottom,var(--g0),var(--g2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 7px rgba(247,217,122,.25));margin-bottom:3px}
+.s-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+
+/* REG */
+.reg-sec{width:100%;max-width:1200px;background:var(--card2);border:1px solid var(--bgold);border-radius:22px;padding:60px 52px;margin-bottom:12px;display:flex;align-items:center;gap:60px;position:relative;overflow:hidden}
+.reg-sec::before{content:'';position:absolute;top:-140px;right:-140px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.07) 0%,transparent 70%);pointer-events:none}
+.reg-l{flex:1;position:relative;z-index:1}
+.reg-tag{font-size:11px;font-weight:500;letter-spacing:.13em;text-transform:uppercase;color:var(--g1);opacity:.7;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.reg-tag::before{content:'▶';font-size:8px}
+.reg-l h2{font-size:clamp(2.4rem,4.5vw,3.6rem);margin-bottom:16px}
+.reg-desc{font-size:.95rem;color:rgba(232,232,240,.4);line-height:1.75;max-width:440px;margin-bottom:28px;font-weight:300}
+.trust-row{display:flex;gap:14px;flex-wrap:wrap}
+.tchip{display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(232,232,240,.38);background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);padding:5px 10px;border-radius:8px;transition:border-color .2s,color .2s}
+.tchip:hover{border-color:rgba(201,168,76,.25);color:var(--g1)}
+.tchip svg{width:13px;height:13px;stroke:var(--g1);stroke-width:1.5;fill:none;opacity:.7}
+.reg-r{flex-shrink:0;position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:14px}
+.btn-reg{display:inline-flex;align-items:center;justify-content:center;gap:12px;background:linear-gradient(135deg,var(--g1),var(--g2));color:#0a0800;padding:19px 52px;border-radius:999px;font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;text-decoration:none;white-space:nowrap;transition:transform .2s,box-shadow .2s;box-shadow:0 0 40px rgba(201,168,76,.2);position:relative;overflow:hidden}
+.btn-reg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transform:translateX(-100%);transition:transform .6s}
+.btn-reg:hover::after{transform:translateX(100%)}
+.btn-reg:hover{transform:translateY(-3px);box-shadow:0 14px 55px rgba(201,168,76,.44)}
+.reg-note{font-size:12px;color:rgba(255,255,255,.2);text-align:center;max-width:220px;line-height:1.5}
+
+/* BENEFITS */
+.benefits-sec{width:100%;max-width:1200px;background:var(--card);border:1px solid var(--border);border-radius:22px;padding:68px 52px;margin-bottom:12px;position:relative;overflow:hidden}
+.benefits-sec::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 40% at 50% 100%,rgba(201,168,76,.05) 0%,transparent 60%);pointer-events:none}
+.sec-hdr{text-align:center;margin-bottom:52px;position:relative;z-index:1}
+.sec-eyebrow{font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--g1);opacity:.6;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:10px}
+.sec-eyebrow::before,.sec-eyebrow::after{content:'';flex:1;max-width:60px;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.3))}
+.sec-eyebrow::after{background:linear-gradient(270deg,transparent,rgba(201,168,76,.3))}
+.benefits-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;position:relative;z-index:1}
+.bcard{background:#08080f;border:1px solid rgba(255,255,255,.05);border-radius:18px;padding:32px 28px;position:relative;overflow:hidden;transition:transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s,border-color .3s}
+.bcard::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .4s;border-radius:18px}
+.bcard:nth-child(1)::before{background:linear-gradient(135deg,rgba(201,168,76,.07) 0%,transparent 60%)}
+.bcard:nth-child(2)::before{background:linear-gradient(135deg,rgba(0,229,204,.06) 0%,transparent 60%)}
+.bcard:nth-child(3)::before{background:linear-gradient(135deg,rgba(168,112,40,.07) 0%,transparent 60%)}
+.bcard:nth-child(4)::before{background:linear-gradient(135deg,rgba(139,92,246,.06) 0%,transparent 60%)}
+.bcard:hover{transform:translateY(-4px);box-shadow:0 20px 50px rgba(0,0,0,.45)}
+.bcard:hover::before{opacity:1}
+.bcard:nth-child(1):hover{border-color:rgba(201,168,76,.25)}.bcard:nth-child(2):hover{border-color:rgba(0,229,204,.2)}
+.bcard:nth-child(3):hover{border-color:rgba(201,168,76,.2)}.bcard:nth-child(4):hover{border-color:rgba(139,92,246,.2)}
+.bcard-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;position:relative;z-index:1}
+.bcard-icon svg{width:26px;height:26px;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.bi-gold{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2)}.bi-gold svg{stroke:var(--g1)}
+.bi-teal{background:rgba(0,229,204,.08);border:1px solid rgba(0,229,204,.18)}.bi-teal svg{stroke:var(--teal)}
+.bi-amber{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.18)}.bi-amber svg{stroke:#fbbf24}
+.bi-purple{background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.18)}.bi-purple svg{stroke:#a78bfa}
+.bcard-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:10px;position:relative;z-index:1}
+.bcard-desc{font-size:.88rem;color:rgba(232,232,240,.42);line-height:1.7;font-weight:300;position:relative;z-index:1}
+.bcard-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px;position:relative;z-index:1}
+.btag{font-size:11px;padding:3px 10px;border-radius:100px;font-weight:500;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.35)}
+.btag-gold{background:rgba(201,168,76,.08);border-color:rgba(201,168,76,.18);color:var(--g1)}
+.btag-teal{background:rgba(0,229,204,.07);border-color:rgba(0,229,204,.18);color:var(--teal)}
+.btag-amber{background:rgba(251,191,36,.07);border-color:rgba(251,191,36,.18);color:#fbbf24}
+.btag-purple{background:rgba(139,92,246,.07);border-color:rgba(139,92,246,.18);color:#a78bfa}
+
+/* STEPS */
+.steps-sec{width:100%;max-width:1200px;background:var(--card2);border:1px solid var(--border);border-radius:22px;padding:68px 52px;margin-bottom:12px}
+.grid-top{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.grid-bot{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.scard{background:#060610;border:1px solid rgba(255,255,255,.05);border-radius:18px;padding:28px 24px;position:relative;overflow:hidden;transition:border-color .3s,transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s}
+.scard::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,168,76,.045) 0%,transparent 55%);opacity:0;transition:opacity .35s}
+.scard:hover{border-color:rgba(201,168,76,.22);transform:translateY(-4px);box-shadow:0 16px 46px rgba(0,0,0,.44)}
+.scard:hover::after{opacity:1}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.22);font-family:'Anton',sans-serif;font-size:12px;color:var(--g1);-webkit-text-fill-color:var(--g1);margin-bottom:15px;position:relative;z-index:1}
+.si{width:38px;height:38px;border-radius:10px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.1);display:flex;align-items:center;justify-content:center;margin-bottom:14px;position:relative;z-index:1;transition:background .2s,border-color .2s}
+.scard:hover .si{background:rgba(201,168,76,.12);border-color:rgba(201,168,76,.25)}
+.si svg{width:18px;height:18px;stroke:var(--g1);stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.st{font-family:'Syne',sans-serif;font-size:.93rem;font-weight:700;color:var(--text);margin-bottom:7px;position:relative;z-index:1}
+.sd{font-size:.84rem;color:rgba(232,232,240,.4);line-height:1.65;font-weight:300;position:relative;z-index:1}
+.sp{display:inline-block;margin-top:11px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.15);border-radius:100px;padding:3px 10px;font-size:11px;color:var(--g1);font-weight:500;position:relative;z-index:1}
+
+/* UPLOAD FORM */
+.upload-sec{width:100%;max-width:1200px;background:var(--card);border:1px solid var(--bgold);border-radius:22px;padding:68px 52px;margin-bottom:12px;position:relative;overflow:hidden}
+.upload-sec::before{content:'';position:absolute;top:-100px;right:-100px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.06) 0%,transparent 70%);pointer-events:none}
+.upload-form{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:40px;position:relative;z-index:1}
+.form-group{display:flex;flex-direction:column;gap:8px}
+.form-group.full{grid-column:1/-1}
+.form-label{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:rgba(232,232,240,.6);text-transform:uppercase;letter-spacing:.08em}
+.form-input{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .25s,box-shadow .25s;width:100%}
+.form-input:focus{border-color:rgba(201,168,76,.45);box-shadow:0 0 0 3px rgba(201,168,76,.08)}
+.form-input::placeholder{color:var(--muted)}
+.upload-zone{background:rgba(0,0,0,.25);border:1.5px dashed rgba(201,168,76,.2);border-radius:12px;padding:24px 16px;text-align:center;cursor:pointer;transition:border-color .25s,background .25s;position:relative;overflow:hidden}
+.upload-zone:hover,.upload-zone.drag{border-color:rgba(201,168,76,.5);background:rgba(201,168,76,.04)}
+.upload-zone.has-file{border-color:rgba(34,197,94,.4);border-style:solid;background:rgba(34,197,94,.04)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.uz-icon{font-size:22px;margin-bottom:8px;color:var(--g1);opacity:.5}
+.uz-title{font-size:.82rem;font-weight:600;color:rgba(232,232,240,.55);margin-bottom:3px}
+.uz-sub{font-size:.75rem;color:var(--muted)}
+.uz-preview{display:none;align-items:center;gap:10px;justify-content:center}
+.uz-preview.show{display:flex}
+.uz-thumb{width:36px;height:36px;border-radius:6px;object-fit:cover;border:1px solid rgba(201,168,76,.3)}
+.uz-fname{font-size:.8rem;color:var(--g1);font-weight:500;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.uz-check{font-size:16px;color:#22c55e}
+.btn-submit{grid-column:1/-1;background:linear-gradient(135deg,var(--g1),var(--g2));color:#0a0800;padding:18px;border-radius:12px;font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;border:none;cursor:pointer;transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden;letter-spacing:.02em;display:flex;align-items:center;justify-content:center;gap:10px}
+.btn-submit::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transform:translateX(-100%);transition:transform .6s}
+.btn-submit:hover::after{transform:translateX(100%)}
+.btn-submit:hover{transform:translateY(-2px);box-shadow:0 10px 40px rgba(201,168,76,.35)}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.spinner-ring{width:20px;height:20px;border:2px solid rgba(10,8,0,.3);border-top-color:#0a0800;border-radius:50%;animation:spin .8s linear infinite;display:none}
+
+/* MODALS */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal-box{background:#0c0a14;border:1px solid rgba(201,168,76,.25);border-radius:22px;padding:48px 40px;max-width:600px;width:100%;position:relative;animation:slideDown .4s cubic-bezier(.16,1,.3,1)}
+.modal-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.06);border:none;color:rgba(255,255,255,.4);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.modal-close:hover{background:rgba(255,255,255,.12);color:white}
+.modal-icon{width:64px;height:64px;border-radius:50%;background:rgba(34,197,94,.1);border:2px solid rgba(34,197,94,.4);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;animation:checkBounce .5s .1s both}
+.modal-icon svg{width:30px;height:30px;stroke:#22c55e;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.modal-title{font-family:'Anton',sans-serif;font-size:1.8rem;text-transform:uppercase;letter-spacing:1px;background:linear-gradient(to bottom,var(--g0),var(--g2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;margin-bottom:10px}
+.modal-subtitle{text-align:center;color:rgba(232,232,240,.5);font-size:.9rem;margin-bottom:24px;line-height:1.6}
+.modal-pending{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);border-radius:12px;padding:18px 20px;margin-bottom:24px;display:flex;align-items:flex-start;gap:12px}
+.pending-text{font-size:.88rem;color:rgba(232,232,240,.55);line-height:1.6}
+.pending-text strong{color:var(--g1)}
+
+/* ADMIN */
+.admin-section{width:100%;max-width:1200px;display:none;margin-bottom:12px}
+.admin-section.show{display:block}
+.admin-bar{background:var(--card);border:1px solid rgba(139,92,246,.25);border-radius:16px;padding:16px 24px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.admin-title{font-family:'Anton',sans-serif;font-size:1.1rem;letter-spacing:1.5px;background:linear-gradient(135deg,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.btn-admin{background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.25);color:#a78bfa;padding:7px 16px;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;transition:background .2s;font-family:'Syne',sans-serif}
+.btn-admin:hover{background:rgba(139,92,246,.2)}
+.btn-admin-exit{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted);padding:7px 16px;border-radius:8px;font-size:.8rem;cursor:pointer;transition:background .2s}
+.btn-admin-exit:hover{background:rgba(255,255,255,.1);color:white}
+.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px}
+.astat{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
+.astat-num{font-family:'Anton',sans-serif;font-size:1.6rem;letter-spacing:1px;line-height:1;margin-bottom:4px}
+.astat-num.purple{color:#a78bfa}.astat-num.gold{color:var(--g1)}.astat-num.green{color:#22c55e}.astat-num.red{color:#ff4466}
+.astat-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.admin-table-wrap{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.admin-table-head{display:grid;grid-template-columns:1.4fr 1fr 1.4fr .9fr .9fr 140px;gap:12px;padding:14px 20px;background:rgba(139,92,246,.06);border-bottom:1px solid var(--border)}
+.ath{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.admin-row{display:grid;grid-template-columns:1.4fr 1fr 1.4fr .9fr .9fr 140px;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.03);align-items:center;transition:background .15s}
+.admin-row:hover{background:rgba(255,255,255,.02)}
+.admin-row:last-child{border-bottom:none}
+.ar-name{font-size:.88rem;font-weight:500;color:var(--text)}
+.ar-sub{font-size:.78rem;color:var(--muted);margin-top:2px}
+.ar-cell{font-size:.82rem;color:var(--muted)}
+.status-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.sp-pending{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);color:#fbbf24}
+.sp-approved{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:#22c55e}
+.sp-rejected{background:rgba(255,68,102,.1);border:1px solid rgba(255,68,102,.25);color:#ff4466}
+.admin-btns{display:flex;gap:6px;flex-wrap:wrap}
+.btn-approve{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:#22c55e;padding:5px 10px;border-radius:6px;font-size:.75rem;font-weight:700;cursor:pointer;transition:background .2s;font-family:'Syne',sans-serif}
+.btn-approve:hover{background:rgba(34,197,94,.2)}
+.btn-reject{background:rgba(255,68,102,.08);border:1px solid rgba(255,68,102,.2);color:#ff4466;padding:5px 10px;border-radius:6px;font-size:.75rem;font-weight:700;cursor:pointer;transition:background .2s;font-family:'Syne',sans-serif}
+.btn-reject:hover{background:rgba(255,68,102,.18)}
+.admin-empty{text-align:center;padding:52px 20px;color:var(--muted);font-size:.9rem}
+.admin-loading{text-align:center;padding:40px;color:var(--muted);font-size:.9rem;display:flex;align-items:center;justify-content:center;gap:10px}
+
+/* APPROVAL MODAL */
+.approval-modal{position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(12px);z-index:600;display:none;align-items:center;justify-content:center;padding:20px}
+.approval-modal.show{display:flex}
+.approval-box{background:#0a0a12;border:1px solid rgba(34,197,94,.25);border-radius:22px;padding:44px 40px;max-width:640px;width:100%;position:relative;animation:slideDown .4s cubic-bezier(.16,1,.3,1);max-height:90vh;overflow-y:auto}
+.approval-box h3{font-family:'Anton',sans-serif;font-size:1.5rem;text-transform:uppercase;letter-spacing:1px;background:linear-gradient(to bottom,var(--g0),var(--g2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px}
+.approval-sub{font-size:.88rem;color:rgba(232,232,240,.45);margin-bottom:24px;line-height:1.6}
+.tg-link-card{background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px 18px;margin-bottom:10px}
+.tg-num{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px}
+.tg-name{font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:3px}
+.tg-url{font-size:.78rem;color:var(--teal);word-break:break-all}
+.approval-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.btn-send-approval{background:linear-gradient(135deg,#22c55e,#16a34a);color:white;padding:14px 32px;border-radius:10px;font-family:'Syne',sans-serif;font-size:.9rem;font-weight:800;border:none;cursor:pointer;transition:transform .15s,box-shadow .15s;flex:1;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-send-approval:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(34,197,94,.3)}
+.btn-send-approval:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-cancel-approval{background:rgba(255,255,255,.05);border:1px solid var(--border);color:rgba(255,255,255,.4);padding:14px 24px;border-radius:10px;font-size:.9rem;cursor:pointer;transition:background .2s}
+.btn-cancel-approval:hover{background:rgba(255,255,255,.1);color:white}
+
+/* WELCOME MODAL */
+.welcome-modal{position:fixed;inset:0;background:rgba(0,0,0,.9);backdrop-filter:blur(14px);z-index:700;display:none;align-items:center;justify-content:center;padding:20px}
+.welcome-modal.show{display:flex}
+.welcome-box{background:#070712;border:1px solid rgba(201,168,76,.3);border-radius:24px;padding:48px 44px;max-width:660px;width:100%;position:relative;animation:slideDown .5s cubic-bezier(.16,1,.3,1);max-height:92vh;overflow-y:auto;text-align:center}
+.welcome-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:100px;padding:5px 16px;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#22c55e;margin-bottom:24px}
+.welcome-box h2{font-size:clamp(2rem,5vw,3rem);margin-bottom:8px}
+.welcome-sub{font-size:1rem;color:rgba(232,232,240,.45);margin-bottom:32px;line-height:1.7;max-width:480px;margin-left:auto;margin-right:auto}
+.tg-links-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:28px;text-align:left}
+.tg-link-item{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;text-decoration:none;transition:border-color .2s,background .2s}
+.tg-link-item:hover{border-color:rgba(201,168,76,.25);background:rgba(201,168,76,.04)}
+.tg-link-icon{width:38px;height:38px;border-radius:10px;background:rgba(0,136,204,.15);border:1px solid rgba(0,136,204,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+.tg-link-info{flex:1}
+.tg-link-name{font-family:'Syne',sans-serif;font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:2px}
+.tg-link-desc{font-size:.76rem;color:var(--muted)}
+.tg-link-arrow{color:rgba(255,255,255,.2);font-size:14px}
+.tg-link-item:hover .tg-link-arrow{color:var(--g1)}
+.video-welcome{background:rgba(0,229,204,.06);border:1px solid rgba(0,229,204,.18);border-radius:14px;padding:20px;margin-bottom:28px;display:flex;gap:16px;align-items:flex-start;text-align:left}
+.video-thumb{width:80px;height:56px;border-radius:8px;background:linear-gradient(135deg,rgba(0,229,204,.2),rgba(201,168,76,.2));display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:24px}
+.video-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--teal);font-weight:700;margin-bottom:4px}
+.video-title{font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:6px}
+.video-desc{font-size:.78rem;color:var(--muted);line-height:1.55;margin-bottom:8px}
+.video-link{display:inline-flex;align-items:center;gap:6px;background:rgba(0,229,204,.1);border:1px solid rgba(0,229,204,.25);color:var(--teal);padding:6px 12px;border-radius:8px;font-size:.78rem;font-weight:600;text-decoration:none;transition:background .2s}
+.video-link:hover{background:rgba(0,229,204,.18)}
+.welcome-note{font-size:.82rem;color:rgba(232,232,240,.35);line-height:1.65;margin-bottom:20px}
+.btn-welcome-close{width:100%;background:linear-gradient(135deg,var(--g1),var(--g2));color:#0a0800;padding:16px;border-radius:12px;font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;border:none;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.btn-welcome-close:hover{transform:translateY(-2px);box-shadow:0 10px 36px rgba(201,168,76,.35)}
+
+/* CHAT */
+.chat-toggle{position:fixed;bottom:28px;right:28px;width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--g1),var(--g2));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:400;box-shadow:0 4px 24px rgba(201,168,76,.35);transition:transform .2s,box-shadow .2s;animation:float 3s ease-in-out infinite}
+.chat-toggle:hover{transform:scale(1.08);box-shadow:0 8px 36px rgba(201,168,76,.5)}
+.chat-toggle svg{width:26px;height:26px;stroke:#0a0800;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.chat-badge{position:absolute;top:-2px;right:-2px;width:18px;height:18px;border-radius:50%;background:#ff4466;border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white}
+.chat-window{position:fixed;bottom:100px;right:28px;width:340px;background:#0c0a16;border:1px solid rgba(201,168,76,.2);border-radius:18px;overflow:hidden;z-index:400;display:none;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.6);animation:slideDown .3s cubic-bezier(.16,1,.3,1)}
+.chat-window.open{display:flex}
+.chat-head{background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.06));border-bottom:1px solid rgba(255,255,255,.06);padding:14px 18px;display:flex;align-items:center;gap:12px}
+.chat-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#8A6B28,var(--g1));display:flex;align-items:center;justify-content:center;font-family:'Anton',sans-serif;font-size:13px;color:#1a1000;flex-shrink:0}
+.chat-head-info{flex:1}
+.chat-name{font-family:'Syne',sans-serif;font-size:.88rem;font-weight:700}
+.chat-status{font-size:.72rem;color:#22c55e;display:flex;align-items:center;gap:4px}
+.status-green{width:5px;height:5px;border-radius:50%;background:#22c55e;animation:bpulse 1.5s infinite}
+.chat-close-btn{background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:18px;padding:4px;transition:color .2s}
+.chat-close-btn:hover{color:white}
+.chat-messages{flex:1;padding:16px;display:flex;flex-direction:column;gap:10px;max-height:300px;overflow-y:auto;scroll-behavior:smooth}
+.chat-messages::-webkit-scrollbar{width:4px}
+.chat-messages::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+.msg{max-width:82%;padding:9px 13px;border-radius:12px;font-size:.83rem;line-height:1.55;animation:fadeUp .25s ease}
+.msg-bot{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.05);color:rgba(232,232,240,.75);align-self:flex-start;border-radius:4px 12px 12px 12px}
+.msg-user{background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.12));border:1px solid rgba(201,168,76,.2);color:var(--g1);align-self:flex-end;border-radius:12px 4px 12px 12px}
+.typing-indicator{display:none;gap:4px;padding:10px 13px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.05);border-radius:4px 12px 12px 12px;align-self:flex-start}
+.typing-indicator.show{display:flex}
+.typing-dot{width:6px;height:6px;border-radius:50%;background:rgba(232,232,240,.4)}
+.typing-dot:nth-child(1){animation:bpulse .9s .0s infinite}
+.typing-dot:nth-child(2){animation:bpulse .9s .2s infinite}
+.typing-dot:nth-child(3){animation:bpulse .9s .4s infinite}
+.quick-replies{padding:0 14px 12px;display:flex;flex-wrap:wrap;gap:6px}
+.qr{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:100px;padding:5px 11px;font-size:.75rem;color:rgba(232,232,240,.5);cursor:pointer;transition:border-color .2s,color .2s}
+.qr:hover{border-color:rgba(201,168,76,.3);color:var(--g1)}
+.chat-input-row{padding:12px 14px;border-top:1px solid rgba(255,255,255,.05);display:flex;gap:8px;align-items:center}
+.chat-input{flex:1;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.83rem;outline:none;transition:border-color .2s;resize:none}
+.chat-input:focus{border-color:rgba(201,168,76,.35)}
+.chat-send{background:linear-gradient(135deg,var(--g1),var(--g2));border:none;width:34px;height:34px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s;flex-shrink:0}
+.chat-send:hover{transform:scale(1.05)}
+.chat-send svg{width:16px;height:16px;stroke:#0a0800;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* TOAST */
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:#0c0a14;border:1px solid rgba(201,168,76,.3);border-radius:12px;padding:12px 20px;font-size:.85rem;color:var(--text);z-index:800;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.error{border-color:rgba(255,68,102,.3);color:#ff8899}
+.toast.success{border-color:rgba(34,197,94,.3);color:#4ade80}
+
+footer{width:100%;max-width:1200px;border-top:1px solid var(--border);padding:22px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.fl{font-family:'Anton',sans-serif;font-size:1.05rem;letter-spacing:2px;background:linear-gradient(to bottom,var(--g0),var(--g2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ft{font-size:11px;color:rgba(255,255,255,.17);letter-spacing:.02em}
+
+@media(max-width:960px){
+  .reg-sec{flex-direction:column;text-align:center;padding:44px 28px;gap:32px}
+  .trust-row{justify-content:center}.reg-desc{margin:0 auto 28px}
+  .benefits-grid{grid-template-columns:1fr}
+  .upload-form{grid-template-columns:1fr}
+  .upload-form .form-group.full{grid-column:1}
+  .upload-form .btn-submit{grid-column:1}
+  .admin-stats{grid-template-columns:repeat(2,1fr)}
+  .admin-table-head,.admin-row{grid-template-columns:1.2fr 1fr 120px}
+  .ath:nth-child(3),.ath:nth-child(4),.ath:nth-child(5){display:none}
+}
+@media(max-width:768px){
+  nav{display:flex;justify-content:space-between}
+  .nav-links,.nav-actions{display:none}
+  .menu-toggle{display:flex}
+  .nav-menu{position:fixed;top:0;right:-100%;width:100%;height:100%;background:var(--bg);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;transition:right .4s cubic-bezier(.4,0,.2,1)}
+  .nav-menu.active{right:0}
+  .nav-menu .nav-links,.nav-menu .nav-actions{display:flex;flex-direction:column;align-items:center}
+  .nav-menu .nav-links{gap:22px}.nav-menu .nav-links a{font-size:1.2rem}
+  .nav-menu .nav-actions{flex-direction:column;width:80%;max-width:280px;gap:12px}
+  .nav-menu .btn-ghost,.nav-menu .btn-nav-gold{width:100%;text-align:center;padding:12px}
+  .hero{padding:52px 20px 48px;min-height:auto}.chart-wrap{height:140px}
+  .steps-sec,.benefits-sec,.upload-sec{padding:44px 18px}.reg-sec{padding:40px 18px}
+  .chat-window{width:calc(100vw - 32px);right:16px;bottom:90px}
+  footer{flex-direction:column;text-align:center}
+  .grid-top,.grid-bot{grid-template-columns:1fr}
+  .approval-box,.welcome-box{padding:32px 24px}.modal-box{padding:36px 24px}
+}
+@media(max-width:480px){.hero,.steps-sec,.reg-sec,.upload-sec,.benefits-sec{border-radius:16px}}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<nav>
+  <span class="nav-logo">CLUB 10M</span>
+  <div class="nav-menu" id="navmenu">
+    <ul class="nav-links">
+      <li><a href="#registro">Registro XM</a></li>
+      <li><a href="#beneficios">Beneficios</a></li>
+      <li><a href="#pasos">Pasos</a></li>
+      <li><a href="#unirse">Unirme</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="#unirse" class="btn-ghost">Unirme al club</a>
+      <a href="https://clicks.pipaffiliates.com/c?c=1015622&l=es&p=1" class="btn-nav-gold" target="_blank" rel="noopener">Abrir cuenta XM →</a>
+    </div>
+  </div>
+  <button class="menu-toggle" id="menutoggle" aria-label="Menú"><span></span><span></span></button>
+</nav>
+
+<section class="hero" id="hero">
+  <div class="hero-grid"></div><div class="scanline"></div>
+  <div class="particles" id="particles"></div>
+  <div class="hero-inner">
+    <div class="hero-badge"><span class="bpulse"></span>Comunidad activa · 800+ traders Colombia</div>
+    <h1>CLUB 10M</h1>
+    <div class="hero-sub">MÁS QUE UN CLUB DE TRADING</div>
+    <p class="hero-desc">Un ecosistema donde el <strong>trading</strong>, el <strong>network marketing</strong>, el <strong>brokeraje</strong> y el <strong>desarrollo personal</strong> convergen en una sola comunidad.</p>
+    <div class="cta-row">
+      <a href="https://clicks.pipaffiliates.com/c?c=1015622&l=es&p=1" class="btn-hero" target="_blank" rel="noopener">Abrir cuenta XM <span class="arr">→</span></a>
+      <a href="#unirse" class="btn-outline">Unirme al club</a>
+    </div>
+  </div>
+  <div class="chart-wrap">
+    <span class="chart-lbl"><span class="live-dot"></span>XAU/USD · Tiempo real</span>
+    <div class="chart-price-display"><span class="chart-price" id="cprice">3 287,40</span><span class="chart-change" id="cchange">+0.38%</span></div>
+    <canvas id="chart"></canvas>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="s-num" data-target="800">0</div><div class="s-lbl">Miembros</div></div>
+    <div class="stat"><div class="s-num">XAU</div><div class="s-lbl">Especialidad</div></div>
+    <div class="stat"><div class="s-num">24/7</div><div class="s-lbl">Comunidad</div></div>
+    <div class="stat"><div class="s-num">XM</div><div class="s-lbl">Broker</div></div>
+  </div>
+</section>
+
+<div class="reg-sec sr" id="registro">
+  <div class="reg-l sr-l">
+    <div class="reg-tag">Paso 1 · Comienza aquí</div>
+    <h2>ABRE TU<br>CUENTA XM</h2>
+    <p class="reg-desc">Registro gratuito en menos de 5 minutos. Regulado por CySEC, FSCA y ASIC. Sin costos ocultos ni comisiones en depósitos.</p>
+    <div class="trust-row">
+      <div class="tchip"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Regulado CySEC</div>
+      <div class="tchip"><svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Sin comisión</div>
+      <div class="tchip"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>5 minutos</div>
+    </div>
+  </div>
+  <div class="reg-r sr-r">
+    <a href="https://clicks.pipaffiliates.com/c?c=1015622&l=es&p=1" class="btn-reg" target="_blank" rel="noopener">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Registrarme en XM
+    </a>
+    <p class="reg-note">Usa este link oficial del club para activar tu membresía</p>
+  </div>
+</div>
+
+<section class="benefits-sec" id="beneficios">
+  <div class="sec-hdr sr">
+    <div class="sec-eyebrow">✦ Lo que obtienes</div>
+    <h2>UN ECOSISTEMA<br>COMPLETO DE ÉXITO</h2>
+    <p class="sec-desc">Club 10M no es solo señales. Es un movimiento donde cada miembro crece en múltiples dimensiones.</p>
+  </div>
+  <div class="benefits-grid">
+    <div class="bcard sr sr-d1"><div class="bcard-icon bi-gold"><svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div><div class="bcard-title">Trading Profesional</div><p class="bcard-desc">Análisis técnico y fundamental especializado en XAU/USD. Señales, estrategias, gestión de riesgo y mentoría directa de traders activos con resultados reales.</p><div class="bcard-tags"><span class="btag btag-gold">XAU/USD</span><span class="btag btag-gold">Señales</span><span class="btag btag-gold">Análisis</span><span class="btag btag-gold">Mentoría</span></div></div>
+    <div class="bcard sr sr-d2"><div class="bcard-icon bi-teal"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="bcard-title">Network Marketing</div><p class="bcard-desc">Construye una red de contactos de alto valor. Aprende a desarrollar tu marca personal y genera ingresos a través del programa de referidos y alianzas estratégicas.</p><div class="bcard-tags"><span class="btag btag-teal">Red de contactos</span><span class="btag btag-teal">Referidos</span><span class="btag btag-teal">Marca personal</span></div></div>
+    <div class="bcard sr sr-d3"><div class="bcard-icon bi-amber"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></div><div class="bcard-title">Crecimiento Personal</div><p class="bcard-desc">Mindset de élite, disciplina financiera y gestión emocional. El éxito en los mercados empieza en la cabeza. Desarrollamos el trader completo.</p><div class="bcard-tags"><span class="btag btag-amber">Mindset</span><span class="btag btag-amber">Disciplina</span><span class="btag btag-amber">Desarrollo</span></div></div>
+    <div class="bcard sr sr-d4"><div class="bcard-icon bi-purple"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M6 9l4 4 4-4 4 4"/></svg></div><div class="bcard-title">Brokeraje & Finanzas</div><p class="bcard-desc">Acceso directo a XM, uno de los brokers más regulados del mundo. Soporte para apertura de cuentas, tipos de cuenta, apalancamiento y optimización de operativa.</p><div class="bcard-tags"><span class="btag btag-purple">XM Broker</span><span class="btag btag-purple">MT4/MT5</span><span class="btag btag-purple">Soporte 1:1</span></div></div>
+  </div>
+</section>
+
+<section class="steps-sec sr" id="pasos">
+  <div class="sec-hdr">
+    <div class="sec-eyebrow">✦ Proceso completo</div>
+    <h2>5 PASOS PARA ACTIVAR TU CUENTA</h2>
+    <p class="sec-desc">Sigue cada paso. Al final sube tus comprobantes directamente aquí y recibirás acceso en máximo 24 horas.</p>
+  </div>
+  <div class="grid-top">
+    <div class="scard sr sr-d1"><div class="sn">01</div><div class="si"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="st">Crea tu cuenta XM</div><p class="sd">Usa el link oficial del club. Completa el formulario con tus datos reales exactamente como aparecen en tu cédula.</p><span class="sp">✦ Link oficial del club</span></div>
+    <div class="scard sr sr-d2"><div class="sn">02</div><div class="si"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div><div class="st">Verifica tu identidad (KYC)</div><p class="sd">Sube cédula por ambas caras y selfie sosteniéndola. XM aprueba en minutos. Hazlo antes de depositar.</p><span class="sp">✦ 100% online</span></div>
+  </div>
+  <div class="grid-bot">
+    <div class="scard sr sr-d1"><div class="sn">03</div><div class="si"><svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="st">Realiza tu depósito</div><p class="sd">Mínimo $15 USD. Tarjeta, transferencia o métodos locales. Sin comisión.</p><span class="sp">✦ Desde $15 USD</span></div>
+    <div class="scard sr sr-d2"><div class="sn">04</div><div class="si"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01M9 7h6M9 11h4"/></svg></div><div class="st">Instala MetaTrader</div><p class="sd">Descarga MT4 o MT5. Inicia sesión con las credenciales que XM envía a tu correo.</p><span class="sp">✦ iOS · Android · PC</span></div>
+    <div class="scard sr sr-d3"><div class="sn">05</div><div class="si"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div><div class="st">Sube tus comprobantes</div><p class="sd">Completa el formulario de abajo con tus datos y las capturas requeridas. Revisamos y te enviamos acceso a Telegram.</p><span class="sp">✦ Aprobación en 24h</span></div>
+  </div>
+</section>
+
+<section class="upload-sec sr" id="unirse">
+  <div style="position:relative;z-index:1">
+    <div class="sec-hdr" style="margin-bottom:0">
+      <div class="sec-eyebrow">✦ Paso final</div>
+      <h2>SUBE TUS COMPROBANTES</h2>
+      <p class="sec-desc" style="margin-bottom:0">Con tu cuenta XM fondeada, completa el formulario. Revisaremos tu solicitud y te enviaremos los accesos al ecosistema Club 10M por correo electrónico.</p>
+    </div>
+  </div>
+  <form class="upload-form" id="uploadForm" onsubmit="submitForm(event)">
+    <div class="form-group">
+      <label class="form-label">Nombre completo *</label>
+      <input type="text" class="form-input" id="f-name" placeholder="Como aparece en tu cédula" required/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Correo electrónico *</label>
+      <input type="email" class="form-input" id="f-email" placeholder="El registrado en XM" required/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Usuario de Instagram *</label>
+      <input type="text" class="form-input" id="f-instagram" placeholder="@tuusuario" required/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Número de cuenta XM *</label>
+      <input type="text" class="form-input" id="f-account" placeholder="Tu número de cuenta MT" required/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Captura cuenta XM + depósito *</label>
+      <div class="upload-zone" id="uz1">
+        <input type="file" accept="image/*" id="file1" onchange="handleFile(this,'uz1','pv1','fn1')"/>
+        <div id="uz1-default"><div class="uz-icon">📸</div><div class="uz-title">Cuenta XM con saldo visible</div><div class="uz-sub">PNG, JPG · Clic o arrastra</div></div>
+        <div class="uz-preview" id="pv1"><img class="uz-thumb" id="fn1-img" src="" alt=""/><span class="uz-fname" id="fn1"></span><span class="uz-check">✓</span></div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Captura perfil de Instagram *</label>
+      <div class="upload-zone" id="uz2">
+        <input type="file" accept="image/*" id="file2" onchange="handleFile(this,'uz2','pv2','fn2')"/>
+        <div id="uz2-default"><div class="uz-icon">📱</div><div class="uz-title">Perfil con usuario visible</div><div class="uz-sub">PNG, JPG · Clic o arrastra</div></div>
+        <div class="uz-preview" id="pv2"><img class="uz-thumb" id="fn2-img" src="" alt=""/><span class="uz-fname" id="fn2"></span><span class="uz-check">✓</span></div>
+      </div>
+    </div>
+    <div class="form-group full">
+      <label class="form-label">Mensaje adicional (opcional)</label>
+      <textarea class="form-input" id="f-msg" rows="2" placeholder="¿Algo que quieras contarnos?" style="resize:vertical"></textarea>
+    </div>
+    <button type="submit" class="btn-submit" id="submitBtn">
+      <span class="spinner-ring" id="submitSpinner"></span>
+      <span id="submitText">Enviar solicitud de membresía →</span>
+    </button>
+  </form>
+</section>
+
+<footer>
+  <span class="fl">CLUB 10M</span>
+  <span class="ft">Trading · Network · Crecimiento · Brokeraje · Colombia © 2025</span>
+  <span class="ft">Powered by XM · CySEC · FSCA · ASIC</span>
+</footer>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('successModal')">✕</button>
+    <div class="modal-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <div class="modal-title">¡Solicitud enviada!</div>
+    <p class="modal-subtitle">Hemos recibido tus comprobantes y los guardamos de forma segura. Nicolás revisará tu solicitud en máximo 24 horas.</p>
+    <div class="modal-pending">
+      <span style="font-size:20px;flex-shrink:0">⏳</span>
+      <div class="pending-text">Una vez aprobada tu solicitud, recibirás un <strong>correo electrónico</strong> con acceso inmediato a todos los canales oficiales de Club 10M en Telegram y el video de onboarding.</div>
+    </div>
+    <button onclick="closeModal('successModal')" style="width:100%;background:linear-gradient(135deg,var(--g1),var(--g2));color:#0a0800;padding:14px;border-radius:10px;font-family:'Syne',sans-serif;font-size:.95rem;font-weight:800;border:none;cursor:pointer;margin-top:8px">Entendido, espero mi aprobación</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-section" id="adminSection">
+  <div class="admin-bar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="admin-title">PANEL DE ADMINISTRACIÓN</span>
+      <span style="font-size:11px;color:var(--muted);background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.15);padding:3px 8px;border-radius:6px">Club 10M · Supabase</span>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn-admin" onclick="loadAdmin()">↻ Actualizar</button>
+      <button class="btn-admin-exit" onclick="exitAdmin()">Salir del panel</button>
+    </div>
+  </div>
+  <div class="admin-stats">
+    <div class="astat"><div class="astat-num purple" id="a-total">—</div><div class="astat-lbl">Total solicitudes</div></div>
+    <div class="astat"><div class="astat-num gold" id="a-pending">—</div><div class="astat-lbl">Pendientes</div></div>
+    <div class="astat"><div class="astat-num green" id="a-approved">—</div><div class="astat-lbl">Aprobados</div></div>
+    <div class="astat"><div class="astat-num red" id="a-rejected">—</div><div class="astat-lbl">Rechazados</div></div>
+  </div>
+  <div class="admin-table-wrap">
+    <div class="admin-table-head">
+      <div class="ath">Nombre</div>
+      <div class="ath">Instagram</div>
+      <div class="ath">Email</div>
+      <div class="ath">Cuenta XM</div>
+      <div class="ath">Estado</div>
+      <div class="ath">Acciones</div>
+    </div>
+    <div id="adminRows"><div class="admin-loading"><span class="spinner-ring" style="display:block;border-color:rgba(139,92,246,.3);border-top-color:#a78bfa"></span> Cargando solicitudes...</div></div>
+  </div>
+</div>
+
+<!-- APPROVAL MODAL -->
+<div class="approval-modal" id="approvalModal">
+  <div class="approval-box">
+    <button onclick="closeModal('approvalModal')" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,.06);border:none;color:rgba(255,255,255,.4);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">✕</button>
+    <h3>Aprobar membresía</h3>
+    <p class="approval-sub">Se enviará un correo al miembro con todos los links de Telegram y el video de onboarding. Esta acción no se puede deshacer.</p>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:16px">Miembro: <strong id="approvalName" style="color:var(--text)"></strong> · <span id="approvalEmail" style="color:var(--g1)"></span></p>
+    <div class="tg-link-card"><div class="tg-num">Canal 1</div><div class="tg-name">🎯 Señales Maestras</div><div class="tg-url">t.me/+NyJI7avlN8JjYjgx</div></div>
+    <div class="tg-link-card"><div class="tg-num">Canal 2</div><div class="tg-name">💸 Testimonios y Ganancias</div><div class="tg-url">t.me/+ibcp7iguQLNkNDAx</div></div>
+    <div class="tg-link-card"><div class="tg-num">Canal 3</div><div class="tg-name">👨‍💻 Grupo VIP Club 10M</div><div class="tg-url">t.me/+E4H3JJ52hVE5Mzgx</div></div>
+    <div class="tg-link-card"><div class="tg-num">Canal 4</div><div class="tg-name">📣 Canal Principal</div><div class="tg-url">t.me/+fGRV4lleytlhOGFh</div></div>
+    <div class="tg-link-card" style="border-color:rgba(0,229,204,.15)"><div class="tg-num">Video</div><div class="tg-name">🎥 Onboarding obligatorio</div><div class="tg-url">youtu.be/L6PAaE1LxoA</div></div>
+    <div class="approval-actions">
+      <button class="btn-send-approval" id="approveBtn" onclick="confirmApproval()">
+        <span id="approveBtnSpinner" class="spinner-ring" style="border-color:rgba(255,255,255,.3);border-top-color:white"></span>
+        <span id="approveBtnText">✓ Confirmar y enviar correo</span>
+      </button>
+      <button class="btn-cancel-approval" onclick="closeModal('approvalModal')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- WELCOME MODAL -->
+<div class="welcome-modal" id="welcomeModal">
+  <div class="welcome-box">
+    <div class="welcome-badge">✓ Membresía activada</div>
+    <h2>BIENVENIDO AL CLUB</h2>
+    <p class="welcome-sub">Tu solicitud fue aprobada. Aquí están tus accesos oficiales a Club 10M en Telegram.</p>
+    <div class="tg-links-grid">
+      <a href="https://t.me/+NyJI7avlN8JjYjgx" class="tg-link-item" target="_blank" rel="noopener"><div class="tg-link-icon">🎯</div><div class="tg-link-info"><div class="tg-link-name">Canal de Señales Maestras</div><div class="tg-link-desc">Señales diarias XAU/USD con análisis técnico</div></div><span class="tg-link-arrow">→</span></a>
+      <a href="https://t.me/+ibcp7iguQLNkNDAx" class="tg-link-item" target="_blank" rel="noopener"><div class="tg-link-icon">💸</div><div class="tg-link-info"><div class="tg-link-name">Grupo de Testimonios</div><div class="tg-link-desc">Fotos de ganancias diarias de las señales</div></div><span class="tg-link-arrow">→</span></a>
+      <a href="https://t.me/+E4H3JJ52hVE5Mzgx" class="tg-link-item" target="_blank" rel="noopener"><div class="tg-link-icon">👨‍💻</div><div class="tg-link-info"><div class="tg-link-name">Grupo Privado VIP Club 10M</div><div class="tg-link-desc">Educación, tutoriales, marca personal, dudas</div></div><span class="tg-link-arrow">→</span></a>
+      <a href="https://t.me/+fGRV4lleytlhOGFh" class="tg-link-item" target="_blank" rel="noopener"><div class="tg-link-icon">📣</div><div class="tg-link-info"><div class="tg-link-name">Canal Principal Club 10M</div><div class="tg-link-desc">Canal global con todos los anuncios</div></div><span class="tg-link-arrow">→</span></a>
+    </div>
+    <div class="video-welcome">
+      <div class="video-thumb">▶</div>
+      <div class="video-info">
+        <div class="video-label">Onboarding obligatorio</div>
+        <div class="video-title">Cómo empezar en Club 10M</div>
+        <div class="video-desc">Mira este video antes de copiar tu primera señal. Paso a paso y hoja de ruta de partida.</div>
+        <a href="https://youtu.be/L6PAaE1LxoA?si=Gj9R1gFNNA-SO0Td" target="_blank" rel="noopener" class="video-link">▶ Ver video ahora</a>
+      </div>
+    </div>
+    <p class="welcome-note">⚡ En el canal de señales maestras hay un mensaje fijado con los videos que debes ver antes de copiar tu primera señal. Bienvenid@ al mundo del trading. 🌎💸</p>
+    <button class="btn-welcome-close" onclick="closeModal('welcomeModal')">Entendido, ¡voy a Telegram! →</button>
+  </div>
+</div>
+
+<!-- CHAT -->
+<button class="chat-toggle" id="chatToggle" onclick="toggleChat()" aria-label="Soporte">
+  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  <span class="chat-badge">1</span>
+</button>
+<div class="chat-window" id="chatWindow">
+  <div class="chat-head">
+    <div class="chat-avatar">N</div>
+    <div class="chat-head-info"><div class="chat-name">Soporte Club 10M</div><div class="chat-status"><span class="status-green"></span>En línea · Responde en minutos</div></div>
+    <button class="chat-close-btn" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="msg msg-bot">¡Hola! 👋 Soy el asistente de <strong>Club 10M</strong>. ¿En qué puedo ayudarte hoy?</div>
+    <div class="msg msg-bot">Si tienes dudas sobre el proceso de registro, depósito o cómo subir los comprobantes, estoy aquí. 🔥</div>
+  </div>
+  <div class="typing-indicator" id="typingIndicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>
+  <div class="quick-replies" id="quickReplies">
+    <span class="qr" onclick="sendQuickReply('¿Cómo me registro en XM?')">¿Cómo registro en XM?</span>
+    <span class="qr" onclick="sendQuickReply('¿Cómo hago el depósito?')">¿Cómo depositar?</span>
+    <span class="qr" onclick="sendQuickReply('¿Qué documentos debo subir?')">¿Qué documentos?</span>
+    <span class="qr" onclick="sendQuickReply('¿Cuánto tarda la aprobación?')">¿Cuánto tarda?</span>
+  </div>
+  <div class="chat-input-row">
+    <input type="text" class="chat-input" id="chatInput" placeholder="Escribe tu pregunta..."/>
+    <button class="chat-send" onclick="sendChatMsg()"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════
+   CONFIG — Supabase + EmailJS
+═══════════════════════════════════ */
+const SUPABASE_URL = 'https://mjdjbfjegkxeqscxvwla.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qZGpiZmplZ2t4ZXFzY3h2d2xhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMjI0MzgsImV4cCI6MjA5NDg5ODQzOH0.uyIkpFpQZCLoL81Vny0wMDGDj4hSPDCAOrtskBwJ3_4';
+const EJS_SERVICE  = 'club10m_service';
+const EJS_TEMPLATE = 'template_qf61at5';
+const EJS_KEY      = 'W-F2Tx6exfPASgERQ';
+const ADMIN_PASS   = 'club10m_admin_2025';
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+emailjs.init(EJS_KEY);
+
+let currentApproveData = null;
+
+/* ═══════════════════════════════════
+   TOAST
+═══════════════════════════════════ */
+function toast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' '+type : '');
+  setTimeout(() => t.className = 'toast', 3500);
+}
+
+/* ═══════════════════════════════════
+   PARTICLES + HERO
+═══════════════════════════════════ */
+(function(){
+  const el = document.getElementById('particles');
+  if (!el) return;
+  for (let i = 0; i < 28; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `left:${Math.random()*100}%;bottom:${Math.random()*30}%;--dur:${4+Math.random()*6}s;--delay:${Math.random()*6}s;--dx:${(Math.random()-.5)*80}px;opacity:0;`;
+    el.appendChild(p);
+  }
+})();
+
+window.addEventListener('load', () => {
+  document.getElementById('hero').classList.add('hero-active');
+  const st = document.querySelector('[data-target="800"]');
+  if (st) {
+    let c = 0;
+    const iv = setInterval(() => { c = Math.min(c+14,800); st.textContent = Math.floor(c)+'+'; if(c>=800) clearInterval(iv); }, 16);
+  }
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('admin') === ADMIN_PASS) showAdmin();
+});
+
+/* Mobile menu */
+const mt = document.getElementById('menutoggle'), nm = document.getElementById('navmenu');
+mt.addEventListener('click', () => { const on = nm.classList.toggle('active'); mt.classList.toggle('active'); document.body.style.overflow = on ? 'hidden' : ''; });
+nm.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { nm.classList.remove('active'); mt.classList.remove('active'); document.body.style.overflow = ''; }));
+
+/* Scroll reveal */
+const io = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; e.target.classList.add('vis'); io.unobserve(e.target); }), { threshold: .07 });
+document.querySelectorAll('.sr,.sr-l,.sr-r').forEach(el => io.observe(el));
+
+/* ═══════════════════════════════════
+   TRADING CHART
+═══════════════════════════════════ */
+(function(){
+  const canvas = document.getElementById('chart');
+  const priceEl = document.getElementById('cprice');
+  const changeEl = document.getElementById('cchange');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const BASE = 3287.4, N = 150;
+  let W, H, prices = [], volumes = [], openPrice = BASE - 12;
+  function gen() { prices = []; volumes = []; let p = openPrice; for(let i=0;i<N;i++){const t=i>N*.55?.06:-.02;const v=.5+Math.random()*2;p=Math.max(BASE-35,Math.min(BASE+28,p+(Math.random()-.46+t)*v));prices.push(p);volumes.push(.3+Math.random()*.7)} }
+  function resize() { const r=canvas.parentElement.getBoundingClientRect(),dpr=window.devicePixelRatio||1;canvas.width=r.width*dpr;canvas.height=r.height*dpr;canvas.style.width=r.width+'px';canvas.style.height=r.height+'px';ctx.scale(dpr,dpr);W=r.width;H=r.height }
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+    const pL=6,pR=6,pT=36,pB=28,cW=W-pL-pR,cH=H-pT-pB,volH=cH*.18,lineH=cH-volH-6;
+    const mn=Math.min(...prices)-2,mx=Math.max(...prices)+2,rng=mx-mn;
+    const tx=i=>pL+(i/(N-1))*cW, ty=v=>pT+(1-(v-mn)/rng)*lineH;
+    [0,1,2,3,4].forEach(g=>{const y=pT+(g/4)*lineH;ctx.strokeStyle='rgba(201,168,76,0.05)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pL,y);ctx.lineTo(W-pR,y);ctx.stroke();ctx.fillStyle='rgba(201,168,76,0.3)';ctx.font='9px Syne,sans-serif';ctx.textAlign='right';ctx.fillText((mx-g/4*rng).toFixed(1),W-pR-2,y-3)});
+    const volTop=pT+lineH+6;
+    for(let i=0;i<N;i++){const bw=Math.max(1,cW/N-.5);ctx.fillStyle=(i===0||prices[i]>=prices[i-1])?'rgba(34,197,94,0.25)':'rgba(255,68,102,0.22)';ctx.fillRect(tx(i)-bw/2,volTop+volH-volumes[i]*volH,bw,volumes[i]*volH)}
+    const ag=ctx.createLinearGradient(0,pT,0,pT+lineH);ag.addColorStop(0,'rgba(201,168,76,0.22)');ag.addColorStop(.5,'rgba(201,168,76,0.07)');ag.addColorStop(1,'rgba(201,168,76,0)');
+    ctx.beginPath();ctx.moveTo(tx(0),ty(prices[0]));for(let i=1;i<N;i++){const cx=(tx(i-1)+tx(i))/2;ctx.bezierCurveTo(cx,ty(prices[i-1]),cx,ty(prices[i]),tx(i),ty(prices[i]))}
+    ctx.lineTo(tx(N-1),pT+lineH);ctx.lineTo(tx(0),pT+lineH);ctx.closePath();ctx.fillStyle=ag;ctx.fill();
+    ctx.beginPath();ctx.moveTo(tx(0),ty(prices[0]));for(let i=1;i<N;i++){const cx=(tx(i-1)+tx(i))/2;ctx.bezierCurveTo(cx,ty(prices[i-1]),cx,ty(prices[i]),tx(i),ty(prices[i]))}
+    const lg=ctx.createLinearGradient(0,0,W,0);lg.addColorStop(0,'rgba(201,168,76,0.4)');lg.addColorStop(.45,'#D9A441');lg.addColorStop(.7,'#F7D97A');lg.addColorStop(1,'#FFF6C7');
+    ctx.strokeStyle=lg;ctx.lineWidth=2.2;ctx.stroke();
+    const split=Math.floor(N*.6);ctx.beginPath();ctx.moveTo(tx(split),ty(prices[split]));for(let i=split+1;i<N;i++){const cx=(tx(i-1)+tx(i))/2;ctx.bezierCurveTo(cx,ty(prices[i-1]),cx,ty(prices[i]),tx(i),ty(prices[i]))}
+    ctx.strokeStyle='rgba(255,246,199,0.5)';ctx.lineWidth=6;ctx.filter='blur(5px)';ctx.stroke();ctx.filter='none';
+    const lx=tx(N-1),ly=ty(prices[N-1]),pulse=(Date.now()%2000)/2000;
+    ctx.beginPath();ctx.arc(lx,ly,pulse*18,0,Math.PI*2);ctx.strokeStyle=`rgba(247,217,122,${.5*(1-pulse)})`;ctx.lineWidth=1;ctx.stroke();
+    ctx.beginPath();ctx.arc(lx,ly,4.5,0,Math.PI*2);ctx.fillStyle='#FFF6C7';ctx.shadowColor='rgba(247,217,122,0.95)';ctx.shadowBlur=14;ctx.fill();ctx.shadowBlur=0;
+    const cur=prices[N-1],chng=(cur-openPrice)/openPrice*100,fmt=cur.toFixed(2).split('.');
+    priceEl.textContent=fmt[0].replace(/\B(?=(\d{3})+(?!\d))/g,'.')+','+fmt[1];
+    changeEl.textContent=(chng>=0?'+':'')+chng.toFixed(2)+'%';changeEl.style.color=chng>=0?'#22c55e':'#ff4466';changeEl.style.background=chng>=0?'rgba(34,197,94,0.1)':'rgba(255,68,102,0.1)';
+  }
+  let lastTick=0;
+  function loop(now){if(now-lastTick>160){lastTick=now;const last=prices[prices.length-1];prices.shift();volumes.shift();prices.push(Math.max(BASE-35,Math.min(BASE+28,last+(Math.random()-.46+.05)*(.2+Math.random()*1.1))));volumes.push(.3+Math.random()*.7);draw()}requestAnimationFrame(loop)}
+  resize();gen();window.addEventListener('resize',()=>{resize();draw()});requestAnimationFrame(loop);
+})();
+
+/* ═══════════════════════════════════
+   FILE UPLOAD
+═══════════════════════════════════ */
+function handleFile(input, zoneId, pvId, fnId) {
+  const file = input.files[0]; if (!file) return;
+  document.getElementById(zoneId).classList.add('has-file');
+  document.getElementById(zoneId+'-default').style.display = 'none';
+  const pv = document.getElementById(pvId); pv.classList.add('show');
+  document.getElementById(fnId).textContent = file.name;
+  const reader = new FileReader();
+  reader.onload = e => { const img = document.getElementById(fnId+'-img'); if(img) img.src = e.target.result; };
+  reader.readAsDataURL(file);
+}
+
+/* ═══════════════════════════════════
+   FORM SUBMIT → SUPABASE
+═══════════════════════════════════ */
+async function submitForm(e) {
+  e.preventDefault();
+  const uz1 = document.getElementById('uz1'), uz2 = document.getElementById('uz2');
+  if (!uz1.classList.contains('has-file') || !uz2.classList.contains('has-file')) {
+    toast('Por favor sube las dos capturas requeridas.', 'error'); return;
+  }
+  const btn = document.getElementById('submitBtn');
+  const txt = document.getElementById('submitText');
+  const spn = document.getElementById('submitSpinner');
+  btn.disabled = true; txt.textContent = 'Guardando...'; spn.style.display = 'block';
+
+  try {
+    const file1 = document.getElementById('file1').files[0];
+    const file2 = document.getElementById('file2').files[0];
+    const ts = Date.now();
+    let url1 = '', url2 = '';
+
+    // Upload images to Supabase Storage
+    if (file1) {
+      const ext1 = file1.name.split('.').pop();
+      const { data: d1, error: e1 } = await sb.storage.from('comprobantes').upload(`xm_${ts}.${ext1}`, file1, { upsert: true });
+      if (!e1) { const { data: pu1 } = sb.storage.from('comprobantes').getPublicUrl(d1.path); url1 = pu1.publicUrl; }
+    }
+    if (file2) {
+      const ext2 = file2.name.split('.').pop();
+      const { data: d2, error: e2 } = await sb.storage.from('comprobantes').upload(`ig_${ts}.${ext2}`, file2, { upsert: true });
+      if (!e2) { const { data: pu2 } = sb.storage.from('comprobantes').getPublicUrl(d2.path); url2 = pu2.publicUrl; }
+    }
+
+    // Insert into DB
+    const { error: dbErr } = await sb.from('solicitudes').insert({
+      nombre: document.getElementById('f-name').value.trim(),
+      email: document.getElementById('f-email').value.trim(),
+      instagram: document.getElementById('f-instagram').value.trim(),
+      cuenta_xm: document.getElementById('f-account').value.trim(),
+      mensaje: document.getElementById('f-msg').value.trim(),
+      imagen_cuenta_xm: url1,
+      imagen_instagram: url2,
+      estado: 'pendiente'
+    });
+
+    if (dbErr) throw dbErr;
+
+    // Reset form
+    document.getElementById('uploadForm').reset();
+    ['uz1','uz2'].forEach(id => { document.getElementById(id).classList.remove('has-file'); document.getElementById(id+'-default').style.display=''; });
+    ['pv1','pv2'].forEach(id => document.getElementById(id).classList.remove('show'));
+    showModal('successModal');
+
+  } catch(err) {
+    console.error(err);
+    toast('Error al enviar. Verifica tu conexión e intenta de nuevo.', 'error');
+  } finally {
+    btn.disabled = false; txt.textContent = 'Enviar solicitud de membresía →'; spn.style.display = 'none';
+  }
+}
+
+/* ═══════════════════════════════════
+   ADMIN PANEL
+═══════════════════════════════════ */
+function showAdmin() {
+  document.getElementById('adminSection').classList.add('show');
+  loadAdmin();
+  setTimeout(() => document.getElementById('adminSection').scrollIntoView({ behavior: 'smooth' }), 300);
+}
+function exitAdmin() { document.getElementById('adminSection').classList.remove('show'); }
+
+async function loadAdmin() {
+  document.getElementById('adminRows').innerHTML = '<div class="admin-loading"><span class="spinner-ring" style="display:block;border-color:rgba(139,92,246,.3);border-top-color:#a78bfa"></span> Cargando desde Supabase...</div>';
+  const { data, error } = await sb.from('solicitudes').select('*').order('fecha', { ascending: false });
+  if (error) { toast('Error cargando solicitudes: '+error.message, 'error'); return; }
+
+  const total = data.length;
+  const pending = data.filter(s => s.estado === 'pendiente').length;
+  const approved = data.filter(s => s.estado === 'aprobado').length;
+  const rejected = data.filter(s => s.estado === 'rechazado').length;
+  document.getElementById('a-total').textContent = total;
+  document.getElementById('a-pending').textContent = pending;
+  document.getElementById('a-approved').textContent = approved;
+  document.getElementById('a-rejected').textContent = rejected;
+
+  if (total === 0) {
+    document.getElementById('adminRows').innerHTML = '<div class="admin-empty">No hay solicitudes aún. Aparecerán aquí cuando alguien complete el formulario.</div>';
+    return;
+  }
+
+  document.getElementById('adminRows').innerHTML = data.map(s => {
+    const fecha = new Date(s.fecha).toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'numeric' });
+    const statusClass = s.estado==='pendiente'?'sp-pending':s.estado==='aprobado'?'sp-approved':'sp-rejected';
+    const statusLabel = s.estado==='pendiente'?'Pendiente':s.estado==='aprobado'?'Aprobado':'Rechazado';
+    const imgs = [s.imagen_cuenta_xm, s.imagen_instagram].filter(Boolean).map(u => `<a href="${u}" target="_blank" style="font-size:11px;color:var(--teal);text-decoration:none;border:1px solid rgba(0,229,204,.2);padding:2px 6px;border-radius:4px">📷 Ver</a>`).join(' ');
+    return `<div class="admin-row">
+      <div><div class="ar-name">${s.nombre}</div><div class="ar-sub">${fecha}</div></div>
+      <div class="ar-cell">${s.instagram}</div>
+      <div class="ar-cell" style="word-break:break-all;font-size:.78rem">${s.email}</div>
+      <div class="ar-cell">${s.cuenta_xm}<br><div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap">${imgs}</div></div>
+      <div><span class="status-pill ${statusClass}">${statusLabel}</span></div>
+      <div class="admin-btns">
+        ${s.estado==='pendiente'?`<button class="btn-approve" onclick="openApproval('${s.id}','${s.nombre.replace(/'/g,"\\'")}','${s.email}')">✓ Aprobar</button><button class="btn-reject" onclick="rejectSub('${s.id}')">✗</button>`:'—'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openApproval(id, name, email) {
+  currentApproveData = { id, name, email };
+  document.getElementById('approvalName').textContent = name;
+  document.getElementById('approvalEmail').textContent = email;
+  document.getElementById('approveBtnText').textContent = '✓ Confirmar y enviar correo';
+  document.getElementById('approveBtnSpinner').style.display = 'none';
+  document.getElementById('approveBtn').disabled = false;
+  showModal('approvalModal');
+}
+
+async function confirmApproval() {
+  if (!currentApproveData) return;
+  const btn = document.getElementById('approveBtn');
+  const spn = document.getElementById('approveBtnSpinner');
+  const txt = document.getElementById('approveBtnText');
+  btn.disabled = true; spn.style.display = 'block'; txt.textContent = 'Enviando correo...';
+
+  try {
+    // Send email via EmailJS
+    await emailjs.send(EJS_SERVICE, EJS_TEMPLATE, {
+      to_name: currentApproveData.name,
+      to_email: currentApproveData.email,
+      from_name: 'Nicolás — Club 10M',
+      tg_1: 'https://t.me/+NyJI7avlN8JjYjgx',
+      tg_2: 'https://t.me/+ibcp7iguQLNkNDAx',
+      tg_3: 'https://t.me/+E4H3JJ52hVE5Mzgx',
+      tg_4: 'https://t.me/+fGRV4lleytlhOGFh',
+      video: 'https://youtu.be/L6PAaE1LxoA?si=Gj9R1gFNNA-SO0Td'
+    });
+
+    // Update Supabase status
+    await sb.from('solicitudes').update({ estado: 'aprobado' }).eq('id', currentApproveData.id);
+
+    closeModal('approvalModal');
+    toast('✓ Correo enviado y membresía aprobada', 'success');
+    loadAdmin();
+    setTimeout(() => showModal('welcomeModal'), 400);
+
+  } catch(err) {
+    console.error(err);
+    toast('Error enviando el correo. Verifica tu configuración de EmailJS.', 'error');
+  } finally {
+    btn.disabled = false; spn.style.display = 'none'; txt.textContent = '✓ Confirmar y enviar correo';
+    currentApproveData = null;
+  }
+}
+
+async function rejectSub(id) {
+  if (!confirm('¿Rechazar esta solicitud? El usuario no recibirá acceso.')) return;
+  const { error } = await sb.from('solicitudes').update({ estado: 'rechazado' }).eq('id', id);
+  if (error) { toast('Error: '+error.message, 'error'); return; }
+  toast('Solicitud rechazada', '');
+  loadAdmin();
+}
+
+/* Keyboard shortcut */
+document.addEventListener('keydown', e => { if(e.ctrlKey && e.shiftKey && e.key==='A'){ e.preventDefault(); showAdmin(); } });
+
+/* ═══════════════════════════════════
+   MODALS
+═══════════════════════════════════ */
+function showModal(id) { document.getElementById(id).classList.add('show'); document.body.style.overflow = 'hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); document.body.style.overflow = ''; }
+document.querySelectorAll('.modal-overlay,.approval-modal,.welcome-modal').forEach(o => {
+  o.addEventListener('click', e => { if(e.target===o) closeModal(o.id); });
+});
+
+/* ═══════════════════════════════════
+   CHAT
+═══════════════════════════════════ */
+let chatOpen = false;
+const responses = {
+  registro: ['Para registrarte en XM, haz clic en el botón dorado "Abrir cuenta XM" en la parte superior. Completa el formulario con tu nombre exacto de la cédula. Tarda menos de 5 minutos. 🟡','Una vez registrado, XM te enviará un email de confirmación. Revisa tu bandeja. ¿Algo más?'],
+  deposito: ['El depósito mínimo es $15 USD. Puedes usar tarjeta débito/crédito, transferencia o métodos locales. XM no cobra comisión. 💰','Después de depositar el saldo aparece en MT4/MT5 en minutos. ¿Tienes otra duda?'],
+  documentos: ['Necesitas subir 2 cosas en el formulario de abajo:\n📸 Captura de tu cuenta XM con el saldo visible\n📱 Captura de tu perfil de Instagram con el usuario visible\nMás tu nombre, correo y número de cuenta XM.','¿Tienes todo listo? Baja hasta la sección "Sube tus comprobantes" y completa el formulario.'],
+  aprobacion: ['La revisión toma máximo 24 horas hábiles. Una vez aprobado recibirás un correo con acceso a todos los canales de Telegram de Club 10M y el video de onboarding. ⚡','¿Hay algo más en lo que pueda ayudarte?'],
+  default: ['Entiendo tu pregunta. Para soporte personalizado puedes contactar directamente a Nicolás por Instagram. 🤝','También puedes intentar ser más específico y te ayudo con gusto. ¿En qué paso exacto tienes dificultad?']
+};
+function getResponse(msg) {
+  const m = msg.toLowerCase();
+  if(m.includes('registr')||m.includes('cuenta')||m.includes('xm')) return responses.registro;
+  if(m.includes('deposit')||m.includes('dinero')||m.includes('pagar')||m.includes('plata')) return responses.deposito;
+  if(m.includes('document')||m.includes('captura')||m.includes('subir')||m.includes('comprobante')) return responses.documentos;
+  if(m.includes('aprob')||m.includes('tiempo')||m.includes('tarda')||m.includes('cuánto')) return responses.aprobacion;
+  return responses.default;
+}
+function addMsg(text, isUser) {
+  const div = document.getElementById('chatMessages');
+  const m = document.createElement('div');
+  m.className = 'msg ' + (isUser ? 'msg-user' : 'msg-bot');
+  m.innerHTML = text.replace(/\n/g,'<br>');
+  div.appendChild(m); div.scrollTop = div.scrollHeight;
+}
+function showTyping(cb, delay=1200) {
+  const ti = document.getElementById('typingIndicator'); ti.classList.add('show');
+  setTimeout(() => { ti.classList.remove('show'); cb(); }, delay);
+}
+function sendChatMsg() {
+  const inp = document.getElementById('chatInput'); const msg = inp.value.trim(); if(!msg) return;
+  inp.value = ''; addMsg(msg, true);
+  document.getElementById('quickReplies').style.display = 'none';
+  const resps = getResponse(msg);
+  showTyping(() => { addMsg(resps[0], false); if(resps[1]) setTimeout(() => showTyping(() => addMsg(resps[1], false), 800), 600); });
+}
+function sendQuickReply(text) { document.getElementById('chatInput').value = text; sendChatMsg(); }
+function toggleChat() {
+  chatOpen = !chatOpen;
+  const win = document.getElementById('chatWindow'); const badge = document.querySelector('.chat-badge');
+  if(chatOpen) { win.classList.add('open'); if(badge) badge.style.display = 'none'; }
+  else win.classList.remove('open');
+}
+document.getElementById('chatInput').addEventListener('keydown', e => { if(e.key==='Enter') sendChatMsg(); });
+</script>
+</body>
+</html>
